@@ -1,0 +1,42 @@
+/*Write a java program to open a file find the string ";"(semicolon) in a given file 
+and replace with " "(space) 
+
+
+Note:to write a data to a file use RandomAccessFile and file name sholud be "sample.txt"
+
+Contentent in a file(sample.txt) :
+hi;hello;how;are;you
+
+Sample Test Case:
+hi hello how are you
+
+*/
+import java.io.*;
+class Test{
+    public static void main(String[] args)throws Exception{
+        RandomAccessFile p=new RandomAccessFile("sample.txt","rw");
+        int i=0;
+        String rep=" ";
+        int r=p.read();
+        while(r!=-1){
+            if(r==59){
+                //System.out.println(p.getFilePointer()+" "+i);
+                p.seek(i);
+                p.write(rep.getBytes());
+                
+            }
+            //System.out.println((char)r+" "+i);
+            i=i+1;
+            r= p.read();
+            
+        }
+        p.seek(0);
+        int r1=p.read();
+        //System.out.println((char)r);
+        while(r1!=-1){
+            System.out.print((char)r1+" ");
+            r1=p.read();
+        }
+        p.close();
+    }
+}

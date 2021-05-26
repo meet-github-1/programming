@@ -1,0 +1,278 @@
+package myproject;
+class First implements Runnable{//every class that implements runnable interface should have run method{
+	public void run() {
+		for(int i=0;i<10;i=i+1) {
+		System.out.println("kmit");
+	}
+	}
+	
+}
+class Second implements Runnable{
+	public void run() {
+		for(int i=0;i<10;i=i+1) {
+			System.out.println("ngit");
+		}
+	}
+}
+
+public class threads {
+
+	public static void main(String[] args) throws InterruptedException{
+		// TODO Auto-generated method stub
+		First f=new First();
+		Second s=new Second();
+		Thread t1=new Thread(f);//it will find its runnable object that is f
+		Thread t2=new Thread(s);//temporal cohesion is giving some constraints
+		t1.start();
+		t2.start();//murder of concurrency(ability to do multile things)
+		t1.join();//join throws a checked exception which is method of class interruptedexception derived from exception
+		t2.join();//temporal cohesion -main will finish after t1 and t2 has finished
+		for(int i=0;i<10;i=i+1) {
+			System.out.println("main");
+		}
+	}
+
+}
+*****************************
+package myproject;
+class SharedData{
+	int val;
+	int flag=0;
+	synchronized void put(int a)throws InterruptedException{
+		while(flag!=0) {//it will wait untill consumers make flag=0;
+			wait();
+		}
+		flag=1;//after producer produced it should make flag=1 so the consumers consumes and no other producer produce
+		System.out.println("put entered");
+		val=a;
+		Thread.sleep(2000);
+		notifyAll();//it will notify all producers and consumers;
+		System.out.println("put exited");
+	}
+	
+	synchronized int get()throws InterruptedException
+	{
+		while(flag!=1) {
+			wait();
+		}
+		flag=0;
+		System.out.println("get entered");
+		Thread.sleep(2000);
+		notifyAll();
+		System.out.println("get exited");
+		return val;
+	}
+}
+class producer implements Runnable{
+	SharedData sd;
+	producer(SharedData s){
+		sd=s;
+		
+	}
+	public void run() {
+		try {
+		for(int i=0;i<5;i=i+1) {
+			sd.put(i);//after putting 0 ,0 has to be consumed by get of consumer to have sychroniztion
+		}
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+		}
+		
+	}
+	
+}
+class consumer implements Runnable{
+	SharedData sd1;
+	consumer(SharedData s){
+		sd1=s;
+		
+	}
+	public void run() {
+		try {
+		for(int i=0;i<5;i=i+1) {
+			System.out.println(sd1.get());//after putting 0 ,0 has to be consumed by get of consumer to have sychroniztion
+		}
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+		}
+		
+	}
+	
+}
+public class threadsychronization {
+
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+		SharedData sd=new SharedData();
+		producer p=new producer(sd);
+		consumer c=new consumer(sd);
+		Thread tp=new Thread(p);
+		Thread tc=new Thread(c);
+		tp.start();
+		tc.start();
+		
+		
+		
+		
+
+	}
+
+}
+*******************************
+package myproject;
+import java.util.*;
+class Emp implements Comparable<Emp>{
+	int empno;
+	String ename;
+	float empsal;
+	Emp(int empno,String ename,float empsal){
+		this.empno=empno;
+		this.ename=ename;
+		this.empsal=empsal;
+	}
+	public String toString() {
+		return "empno= "+empno+" "+"empsal="+empsal+" "+"ename= "+ename;
+	}
+	public int compareTo(Emp e) {
+		return ename.compareTo(e.ename);
+	}
+}
+class EmpComparator implements Comparator<Emp>{
+		public int compare(Emp e1,Emp e2) {
+			return ((int)(e2.empsal-e1.empsal));
+			
+		}
+	}
+public class listcollection {
+
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+		List<Emp> e=new ArrayList<Emp>();
+		Emp e1=new Emp(909,"gopal",10000);
+		Emp e2=new Emp(910,"arsh",100000);
+		Emp e3=new Emp(911,"varsh",1000000);
+		e.add(e1);
+		e.add(e2);
+		e.add(e3);
+		System.out.println(e);
+		e.sort(null);
+		System.out.println(e);
+		EmpComparator ecmp=new EmpComparator();
+		e.sort(ecmp);
+		System.out.println(e);
+		/*List<String> s=new ArrayList<String>();
+		s.add("kmit");
+		s.add("ngit");
+		s.add("vbit");
+		s.add("nit");
+		for(String s1:s) {
+			System.out.println(s1.toUpperCase());
+		}
+		s.sort(null);
+		System.out.println(s);
+		System.out.println(s.get(0));
+		System.out.println(s.indexOf("kmit"));*/
+		
+
+	}
+
+}
+***************************************
+package myproject;
+import java.util.*;
+import java.util.Comparator;
+/*class Emp implements Comparable<Emp>{
+	int empno;
+	String ename;
+	float empsal;
+	Emp(int empno,String ename,float empsal){
+		this.empno=empno;
+		this.ename=ename;
+		this.empsal=empsal;
+	}
+	public String toString() {
+		return "empno= "+empno+" "+"empsal="+empsal+" "+"ename= "+ename;
+	}
+	public int compareTo(Emp e)//hashset doesnt implies on compare to but implies on equals
+	{
+		return ename.compareTo(e.ename);
+	}
+	@Override
+	public boolean equals(Object o) {
+		 if(o instanceof Emp) {
+			 Emp e=((Emp)o);
+			 if(ename.equals(e.ename)){
+				 return true;
+			 }
+			 else {
+				 return false;
+			 }
+			 
+		 }
+		 return false;
+		
+	}
+	@Override
+	public int hashCode() {
+		return ename.length();
+	}
+
+}
+class EmpComparatorr implements Comparator<Emp>{
+		public int compare(Emp e1,Emp e2) {
+			return ((int)(e2.empsal-e1.empsal));
+			
+		}
+	}
+public class mapcollections {
+	public static void main(String[] args) {
+		Set<Emp> empSet=new HashSet<Emp>();
+		Set<Emp> empSet1 =new HashSet<Emp>();
+		//it is unorder but treeset implements in sorted order
+		Emp e1=new Emp(101,"gopal",2500);
+		Emp e2=new Emp(102,"sam",2200);
+		Emp e3=new Emp(103,"gop",2100);
+		Emp e4=new Emp(109,"sam1",2100);
+		//Emp e4=e1;
+		Emp e5=new Emp(102,"sam",2200);
+		Emp e6=new Emp(111,"rammu",2200);
+		empSet.add(e1);
+		empSet.add(e2);
+		empSet.add(e3);
+		empSet.add(e4);
+		System.out.println(empSet);
+		empSet1.add(e5);
+		empSet1.add(e6);
+		System.out.println(empSet1);
+		//empSet.retainAll(empSet1);
+		//System.out.println("after intersection"+empSet);
+		empSet.addAll(empSet1);
+		System.out.println("after union"+empSet);
+		
+		
+		
+		
+	}
+	
+
+}*/
+
+****************************
+import java.util.Scanner;
+import java.util.*;
+class Mapdemo{
+	public static void main(String[] args){
+		Map<String,Integer> map=new TreeMap<String,Integer>();
+		for(String e:args){
+			int v=map.getOrDefault(e,0);
+			map.put(e,v+1);
+		}
+		System.out.println(map);
+	}
+}
+
+
+
+

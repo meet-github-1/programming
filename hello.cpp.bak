@@ -1,0 +1,6 @@
+#include<iostream>
+using namaspace std;
+int main(){
+	cout<<"hello world"<<endl;
+	return 0;
+}

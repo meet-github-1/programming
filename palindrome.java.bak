@@ -1,0 +1,22 @@
+class palindrome 
+{
+	public static void main(String[] args) 
+	{
+		int n=7887,p,q,rev=0;
+		p=n;
+		while(p!=0){
+			q=p%10;
+			rev=(rev*10)+q;
+			p=p/10;
+		}
+		if(rev==n){
+			System.out.println("number is palindrome",n);
+		}
+		else{
+			System.out.println("number is not palindrome",n);
+		}
+
+			
+		
+	}
+}
